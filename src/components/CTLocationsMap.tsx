@@ -63,42 +63,45 @@ function LocationMarker({ location, onNotesUpdate }: LocationMarkerProps) {
       position={[location.lat, location.lng]} 
       icon={icon}
     >
-      <Popup maxWidth={350} className="custom-popup">
-        <div className="p-2">
-          <h3 className="text-lg font-semibold text-gray-800 mb-2 border-b border-gray-200 pb-1">
+      <Popup maxWidth={300} minWidth={250} className="custom-popup">
+        <div className="p-1 sm:p-2">
+          <h3 className="text-sm sm:text-lg font-semibold text-gray-800 mb-1 sm:mb-2 border-b border-gray-200 pb-1">
             {location.name}
           </h3>
           
-          <div className="space-y-2 text-sm">
+          <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm">
             <div>
               <span className="font-medium text-gray-700">📍 Address:</span>
-              <p className="text-gray-600 mt-1">{location.address}</p>
+              <p className="text-gray-600 mt-0.5 sm:mt-1 text-xs sm:text-sm">{location.address}</p>
             </div>
             
             <div>
               <span className="font-medium text-gray-700">🏷️ Keywords:</span>
-              <div className="flex flex-wrap gap-1 mt-1">
-                {location.keywords.split(',').map((keyword, i) => (
+              <div className="flex flex-wrap gap-1 mt-0.5 sm:mt-1">
+                {location.keywords.split(',').slice(0, 4).map((keyword, i) => (
                   <span 
                     key={i}
-                    className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full"
+                    className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs bg-blue-100 text-blue-700 rounded-full"
                   >
                     {keyword.trim()}
                   </span>
                 ))}
+                {location.keywords.split(',').length > 4 && (
+                  <span className="text-xs text-gray-500">+{location.keywords.split(',').length - 4} more</span>
+                )}
               </div>
             </div>
             
-            <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-              <div className="flex items-center gap-4 text-xs">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center pt-1 sm:pt-2 border-t border-gray-100">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs">
                 <span className="flex items-center gap-1">
                   <span className="font-medium">Interest:</span>
                   <div 
-                    className={`w-3 h-3 rounded-full ${
-                      location.levelOfInterest === 1 ? 'bg-red-500' :
-                      location.levelOfInterest === 2 ? 'bg-orange-500' :
-                      location.levelOfInterest === 3 ? 'bg-yellow-500' :
-                      location.levelOfInterest === 4 ? 'bg-lime-500' : 'bg-green-500'
+                    className={`w-2.5 sm:w-3 h-2.5 sm:h-3 rounded-full ${
+                      location.levelOfInterest === 1 ? 'bg-slate-400' :
+                      location.levelOfInterest === 2 ? 'bg-blue-400' :
+                      location.levelOfInterest === 3 ? 'bg-blue-500' :
+                      location.levelOfInterest === 4 ? 'bg-blue-600' : 'bg-purple-600'
                     }`}
                   />
                   <span>{location.levelOfInterest}/5</span>
@@ -109,7 +112,7 @@ function LocationMarker({ location, onNotesUpdate }: LocationMarkerProps) {
             </div>
             
             {onNotesUpdate && (
-              <div className="pt-2 border-t border-gray-100">
+              <div className="pt-1 sm:pt-2 border-t border-gray-100">
                 <label className="block text-xs font-medium text-gray-700 mb-1">
                   📝 Personal Notes
                 </label>
@@ -153,6 +156,10 @@ export function CTLocationsMap({
         zoom={mapZoom}
         className="h-full w-full rounded-lg"
         key={selectedLocation ? `${selectedLocation.lat}-${selectedLocation.lng}` : 'default'}
+        touchZoom={true}
+        doubleClickZoom={true}
+        scrollWheelZoom={true}
+        dragging={true}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -173,10 +180,13 @@ export function CTLocationsMap({
         ))}
       </MapContainer>
       
-      {/* Legend */}
-      <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg p-3 z-[1000]">
-        <h4 className="text-sm font-semibold text-gray-800 mb-2">Interest Level</h4>
-        <div className="space-y-1">
+      {/* Mobile-responsive Legend */}
+      <div className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-white rounded-lg shadow-lg p-2 sm:p-3 z-[1000] max-w-xs">
+        <h4 className="text-xs sm:text-sm font-semibold text-gray-800 mb-1 sm:mb-2">
+          <span className="hidden sm:inline">Interest Level</span>
+          <span className="sm:hidden">Interest</span>
+        </h4>
+        <div className="space-y-0.5 sm:space-y-1">
           {[1, 2, 3, 4, 5].map(level => {
             const colors: Record<number, string> = {
               1: 'bg-slate-400',
@@ -194,10 +204,17 @@ export function CTLocationsMap({
             };
             
             return (
-              <div key={level} className="flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-full ${colors[level]}`} />
+              <div key={level} className="flex items-center gap-1 sm:gap-2">
+                <div className={`w-2.5 sm:w-3 h-2.5 sm:h-3 rounded-full ${colors[level]}`} />
                 <span className="text-xs text-gray-700">
-                  {level}{labels[level] && ` - ${labels[level]}`}
+                  {level}
+                  {/* Mobile: Hide labels except for extreme values */}
+                  <span className="hidden sm:inline">
+                    {labels[level] && ` - ${labels[level]}`}
+                  </span>
+                  <span className="sm:hidden">
+                    {(level === 1 || level === 5) && labels[level] ? ` - ${labels[level]}` : ''}
+                  </span>
                 </span>
               </div>
             );

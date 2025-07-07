@@ -67,27 +67,31 @@ export function LocationFilters({ locations, onFilteredLocations }: LocationFilt
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-3 mb-3">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-md font-semibold text-gray-800">🔍 Filter Locations</h3>
-        <span className="text-xs text-gray-500">{filteredCount}/{locations.length} shown</span>
+    <div className="bg-white rounded-lg shadow-md p-2 sm:p-3 mb-2 sm:mb-3">
+      {/* Mobile: Compact header */}
+      <div className="flex items-center justify-between mb-2 sm:mb-3">
+        <h3 className="text-sm sm:text-md font-semibold text-gray-800">
+          <span className="hidden sm:inline">🔍 Filter Locations</span>
+          <span className="sm:hidden">🔍 Filters</span>
+        </h3>
+        <span className="text-xs text-gray-500">{filteredCount}/{locations.length}</span>
       </div>
       
-      {/* Search */}
-      <div className="mb-3">
+      {/* Search - More compact on mobile */}
+      <div className="mb-2 sm:mb-3">
         <input
           type="text"
-          placeholder="Search locations, keywords, or notes..."
+          placeholder="Search locations..."
           value={searchTerm}
           onChange={(e) => handleSearchChange(e.target.value)}
-          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
       </div>
 
-      {/* Compact Interest Level Filters */}
-      <div className="mb-2">
-        <div className="flex items-center justify-between mb-2">
-          <label className="text-sm font-medium text-gray-700">Interest Level</label>
+      {/* Mobile: Horizontal scrollable interest filters */}
+      <div className="mb-1 sm:mb-2">
+        <div className="flex items-center justify-between mb-1 sm:mb-2">
+          <label className="text-xs sm:text-sm font-medium text-gray-700">Interest Level</label>
           <button
             onClick={resetFilters}
             className="text-xs text-blue-600 hover:text-blue-800 font-medium"
@@ -95,9 +99,14 @@ export function LocationFilters({ locations, onFilteredLocations }: LocationFilt
             Reset
           </button>
         </div>
-        <div className="flex flex-wrap gap-1">
+        
+        {/* Mobile: Horizontal scroll, Desktop: Flex wrap */}
+        <div className="flex gap-1 overflow-x-auto sm:flex-wrap pb-1 sm:pb-0">
           {[5, 4, 3, 2, 1].map(level => (
-            <label key={level} className="flex items-center gap-1 cursor-pointer px-2 py-1 rounded-md hover:bg-gray-50 border border-gray-200">
+            <label 
+              key={level} 
+              className="flex items-center gap-1 cursor-pointer px-2 py-1 rounded-md hover:bg-gray-50 border border-gray-200 flex-shrink-0 min-w-fit"
+            >
               <input
                 type="checkbox"
                 checked={selectedInterestLevels.includes(level)}
