@@ -19,6 +19,28 @@ function MapUpdater({ center, zoom }: MapUpdaterProps) {
     }
   }, [map, center, zoom]);
   
+  // Fix for mobile - invalidate size after mount and on resize
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+    }, 100);
+    
+    const handleResize = () => {
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 100);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+    
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
+  }, [map]);
+  
   return null;
 }
 const createInterestIcon = (level: number) => {
@@ -150,16 +172,18 @@ export function CTLocationsMap({
   const mapZoom = selectedLocation ? 13 : zoom;
 
   return (
-    <div className="h-full w-full relative">
+    <div className="h-full w-full relative" style={{ minHeight: '400px' }}>
       <MapContainer
         center={mapCenter}
         zoom={mapZoom}
-        className="h-full w-full rounded-lg"
+        style={{ height: '100%', width: '100%', minHeight: '400px' }}
+        className="rounded-lg"
         key={selectedLocation ? `${selectedLocation.lat}-${selectedLocation.lng}` : 'default'}
         touchZoom={true}
         doubleClickZoom={true}
         scrollWheelZoom={true}
         dragging={true}
+        preferCanvas={true}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

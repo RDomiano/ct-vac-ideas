@@ -203,7 +203,7 @@ function App() {
           />
           
           {/* Map container - Full height on mobile */}
-          <div className="flex-1 bg-white rounded-lg shadow-md overflow-hidden min-h-0 mt-2 sm:mt-0">
+          <div className="flex-1 bg-white rounded-lg shadow-md overflow-hidden min-h-0 mt-2 sm:mt-0" style={{ minHeight: '400px' }}>
             <CTLocationsMap 
               locations={filteredLocations}
               centerLat={41.4}

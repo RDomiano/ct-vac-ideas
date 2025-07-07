@@ -44,6 +44,14 @@
 .leaflet-container {
   height: 100% !important;
   width: 100% !important;
+  min-height: 400px !important;
+}
+
+/* Mobile: Fix map height issues */
+@media (max-width: 640px) {
+  .leaflet-container {
+    min-height: 60vh !important;
+  }
 }
 
 /* Mobile: Improve map container touch */
